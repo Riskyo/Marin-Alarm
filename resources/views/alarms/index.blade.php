@@ -11,14 +11,14 @@
     {{-- ========================================================= --}}
     {{-- 🟢 TAMPILAN AWAL (BELUM ADA PENCARIAN) --}}
     {{-- ========================================================= --}}
-    @if(empty($search))
+    @if(empty($search) && empty(request('machine_type_id')))
     <div class="flex flex-col items-center justify-start min-h-screen px-4 pt-20">
     @if(session('success'))
     <div class="pt-6 bg-green-100 border border-green-300 text-green-800 rounded mb-4 shadow text-center animate-fade">
         {{ session('success') }}
     </div>
     @endif
-        <h1 class="text-4xl font-bold mb-8 text-center">Cari Kode Alarm</h1>
+        <h1 class="text-4xl font-bold mb-8 text-center">HELP ME MARIN</h1>
 
         <form action="{{ route('alarms.index') }}" method="GET"
               class="flex flex-col sm:flex-row sm:items-center sm:justify-center gap-3 w-full max-w-3xl">
@@ -80,6 +80,54 @@
                 </div>
             </div>
         @endif
+        @if(isset($machineTypes) && $machineTypes->count() > 0)
+
+        <h2 class="text-2xl font-bold text-center mt-10 mb-4">List Kategori</h2>
+
+<div class="w-full max-w-3xl mx-auto relative flex justify-center">
+
+    {{-- Panah kiri --}}
+    <button id="cat-left"
+        class="absolute -left-10 top-1/2 -translate-y-1/2 bg-white border border-gray-300
+               p-2 rounded-full shadow-lg hidden z-20">
+        ←
+    </button>
+
+    {{-- WRAPPER --}}
+    <div id="cat-wrapper" class="overflow-hidden px-6 py-3 w-full">
+
+        {{-- KONTEN – DIRATA TENGAH --}}
+        <div class="flex justify-center w-full">
+            <div id="cat-content"
+                class="flex flex-wrap justify-center gap-3 transition-transform duration-300"
+                style="transform: translateX(0); white-space: normal;">
+                
+                @foreach($machineTypes as $type)
+                    <a href="{{ url('/?search=&machine_type_id=' . $type->id) }}"
+                        class="flex items-center justify-center
+                            bg-blue-50 hover:bg-blue-100
+                            border border-blue-200 text-blue-800 font-medium
+                            rounded-lg px-4 py-2 shadow-sm
+                            transition duration-200 text-center whitespace-nowrap">
+                        {{ $type->name }}
+                    </a>
+                @endforeach
+
+            </div>
+        </div>
+    </div>
+
+    {{-- Panah kanan --}}
+    <button id="cat-right"
+        class="absolute -right-10 top-1/2 -translate-y-1/2 bg-white border border-gray-300
+               p-2 rounded-full shadow-lg hidden z-20">
+        →
+    </button>
+
+</div>
+
+@endif
+
     </div>
 
     {{-- ========================================================= --}}
@@ -274,6 +322,44 @@
 
 {{-- 🚀 Tambahkan tutorial interaktif (Shepherd.js) --}}
 @section('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const wrapper = document.getElementById("cat-wrapper");
+    const content = document.getElementById("cat-content");
+
+    const leftBtn = document.getElementById("cat-left");
+    const rightBtn = document.getElementById("cat-right");
+
+    let offset = 0; // posisi geser
+
+    function updateButtons() {
+        const maxScroll = content.scrollWidth - wrapper.clientWidth;
+
+        leftBtn.classList.toggle("hidden", offset <= 0);
+        rightBtn.classList.toggle("hidden", offset >= maxScroll);
+    }
+
+    function moveRight() {
+        const maxScroll = content.scrollWidth - wrapper.clientWidth;
+        offset = Math.min(offset + 200, maxScroll);
+        content.style.transform = `translateX(-${offset}px)`;
+        updateButtons();
+    }
+
+    function moveLeft() {
+        offset = Math.max(offset - 200, 0);
+        content.style.transform = `translateX(-${offset}px)`;
+        updateButtons();
+    }
+
+    rightBtn.addEventListener("click", moveRight);
+    leftBtn.addEventListener("click", moveLeft);
+
+    updateButtons();
+});
+</script>
+
+
 <script>
 window.addEventListener('load', function() {
     if (typeof Shepherd === 'undefined') {
