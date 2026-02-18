@@ -13,21 +13,28 @@ class PdfController extends Controller
     // =======================
     // 📄 LIST PDF
     // =======================
+    // =======================
+    // 📄 LIST PDF
+    // =======================
     public function index(Request $request)
     {
         $machine_type_id = $request->machine_type_id;
+        $search = $request->search; // 👈 Tangkap input pencarian
 
         $pdfs = Pdf::with('machineType')
             ->when($machine_type_id, fn($q) =>
                 $q->where('machine_type_id', $machine_type_id)
             )
+            ->when($search, fn($q) => 
+                $q->where('title', 'like', "%{$search}%") // 👈 Filter berdasarkan judul
+            )
             ->orderBy('created_at', 'DESC')
             ->paginate(10)
-            ->withQueryString();
+            ->withQueryString(); // withQueryString memastikan search & filter tidak hilang saat pindah page pagination
 
         $machineTypes = MachineType::all();
 
-        return view('pdf.index', compact('pdfs', 'machine_type_id', 'machineTypes'));
+        return view('pdf.index', compact('pdfs', 'machine_type_id', 'machineTypes', 'search'));
     }
 
     // =======================

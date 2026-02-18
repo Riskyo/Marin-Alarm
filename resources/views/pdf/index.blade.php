@@ -17,24 +17,28 @@
 
         {{-- ================= FILTER + UPLOAD ================= --}}
         <form method="GET"
-              class="flex flex-col sm:flex-row sm:items-center sm:justify-center gap-3 w-full max-w-3xl mx-auto mb-6">
+              class="flex flex-col sm:flex-row sm:items-center sm:justify-center gap-3 w-full max-w-4xl mx-auto mb-6">
+            
+            {{-- 🔍 KOTAK PENCARIAN (Baru ditambahkan) --}}
+            <input type="text" name="search" value="{{ request('search') }}"
+                   placeholder="Cari judul PDF..."
+                   class="border rounded-full shadow px-4 py-3 bg-white text-lg w-full sm:w-auto focus:outline-none focus:ring-2 focus:ring-blue-500">
 
-              <select name="machine_type_id"
-                class="border rounded-full shadow px-4 py-3 bg-white text-lg pr-10 w-full sm:w-auto">
-
+            {{-- DROPDOWN MESIN --}}
+            <select name="machine_type_id"
+                class="border rounded-full shadow px-4 py-3 bg-white text-lg pr-10 w-full sm:w-auto focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option value="">All Machine</option>
-
                 @foreach($machineTypes as $type)
                     <option value="{{ $type->id }}"
                         {{ request('machine_type_id') == $type->id ? 'selected' : '' }}>
                         {{ $type->name }}
                     </option>
                 @endforeach
-
             </select>
 
+            {{-- TOMBOL FILTER / CARI --}}
             <button class="bg-blue-600 text-white px-6 py-3 rounded-full hover:bg-blue-700 transition shadow w-full sm:w-auto">
-                Filter
+                Cari & Filter
             </button>
 
             @can('isAdmin')
@@ -165,6 +169,14 @@ window.addEventListener('load', function() {
     addStepIf('#pdf-title-wrapper', {
         title: 'List PDF 📄',
         text: 'Di halaman ini kamu bisa melihat daftar file PDF berdasarkan jenis mesin.',
+        attachTo: { on: 'bottom' },
+        buttons: [{ text: 'Lanjut', action: window.pdfTour.next }]
+    });
+
+    // 🔹 STEP 1.5 — Kotak Pencarian (Search)
+    addStepIf('input[name="search"]', {
+        title: 'Cari PDF 🔍',
+        text: 'Ketikkan nama atau judul PDF di sini untuk mencari file dengan cepat.',
         attachTo: { on: 'bottom' },
         buttons: [{ text: 'Lanjut', action: window.pdfTour.next }]
     });

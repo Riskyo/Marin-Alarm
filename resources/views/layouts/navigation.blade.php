@@ -14,8 +14,12 @@
 
             <!-- 🔵 Logo + Title -->
             <div class="flex items-center">
+                
                 <a href="{{ route('alarms.index') }}"
-                    class="text-lg font-bold text-gray-700 hover:text-blue-600 transition">
+                    class="flex flex-row items-center gap-3 text-lg font-bold text-gray-700 hover:text-blue-600 transition whitespace-nowrap">
+                    
+                    <img src="{{ asset('images/logo.jpeg') }}" alt="Logo Marin" class="h-10 w-auto object-contain shrink-0">
+                    
                     MARIN ALARMS
                 </a>
 
@@ -25,7 +29,7 @@
                     <!-- ⬅️ List PDF sekarang di depan -->
                     <a href="{{ route('pdf.index') }}"
                         class="text-gray-700 hover:text-blue-600 font-medium text-sm transition">
-                        List PDF
+                        Wiring Diagram
                     </a>
 
                     @can('isAdmin')

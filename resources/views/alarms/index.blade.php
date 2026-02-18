@@ -81,52 +81,62 @@
             </div>
         @endif
         @if(isset($machineTypes) && $machineTypes->count() > 0)
+        
+        {{-- Membagi data menjadi kelompok halaman (10 kotak per halaman) --}}
+        @php
+            $perPage = 10; 
+            $chunks = $machineTypes->chunk($perPage);
+        @endphp
 
         <h2 class="text-2xl font-bold text-center mt-10 mb-4">List Kategori</h2>
 
-<div class="w-full max-w-3xl mx-auto relative flex justify-center">
+        <div class="w-full max-w-4xl mx-auto flex items-center justify-center gap-2 px-2 sm:px-4">
 
-    {{-- Panah kiri --}}
-    <button id="cat-left"
-        class="absolute -left-10 top-1/2 -translate-y-1/2 bg-white border border-gray-300
-               p-2 rounded-full shadow-lg hidden z-20">
-        ←
-    </button>
+            {{-- Panah Kiri --}}
+            <button id="cat-left"
+                class="invisible shrink-0 bg-white border border-gray-300 text-gray-700
+                       w-10 h-10 flex items-center justify-center rounded-full shadow-md hover:bg-gray-100 transition z-20">
+                ←
+            </button>
 
-    {{-- WRAPPER --}}
-    <div id="cat-wrapper" class="overflow-hidden px-6 py-3 w-full">
+            {{-- VIEWPORT CAROUSEL --}}
+            <div class="flex-grow overflow-hidden w-full">
+                {{-- TRACK SCROLL --}}
+                <div id="carousel-track" class="flex transition-transform duration-500 ease-in-out w-full" style="transform: translateX(0%);">
+                    
+                    @foreach($chunks as $chunk)
+                        {{-- HALAMAN / SLIDE --}}
+                        <div class="w-full shrink-0 flex justify-center">
+                            
+                            {{-- GRID KOTAK (Memaksa jadi 2 baris) --}}
+                            <div class="grid grid-rows-2 grid-flow-col auto-cols-max gap-3 px-1 py-2">
+                                @foreach($chunk as $type)
+                                    <a href="{{ url('/?search=&machine_type_id=' . $type->id) }}"
+                                       class="flex items-center justify-center
+                                              bg-blue-50 hover:bg-blue-100
+                                              border border-blue-200 text-blue-800 font-medium
+                                              rounded-lg px-4 py-2 shadow-sm
+                                              transition duration-200 text-center whitespace-nowrap">
+                                        {{ $type->name }}
+                                    </a>
+                                @endforeach
+                            </div>
 
-        {{-- KONTEN – DIRATA TENGAH --}}
-        <div class="flex justify-center w-full">
-            <div id="cat-content"
-                class="flex flex-wrap justify-center gap-3 transition-transform duration-300"
-                style="transform: translateX(0); white-space: normal;">
-                
-                @foreach($machineTypes as $type)
-                    <a href="{{ url('/?search=&machine_type_id=' . $type->id) }}"
-                        class="flex items-center justify-center
-                            bg-blue-50 hover:bg-blue-100
-                            border border-blue-200 text-blue-800 font-medium
-                            rounded-lg px-4 py-2 shadow-sm
-                            transition duration-200 text-center whitespace-nowrap">
-                        {{ $type->name }}
-                    </a>
-                @endforeach
+                        </div>
+                    @endforeach
 
+                </div>
             </div>
+
+            {{-- Panah Kanan --}}
+            <button id="cat-right"
+                class="{{ $chunks->count() > 1 ? '' : 'invisible' }} shrink-0 bg-white border border-gray-300 text-gray-700
+                       w-10 h-10 flex items-center justify-center rounded-full shadow-md hover:bg-gray-100 transition z-20">
+                →
+            </button>
+
         </div>
-    </div>
-
-    {{-- Panah kanan --}}
-    <button id="cat-right"
-        class="absolute -right-10 top-1/2 -translate-y-1/2 bg-white border border-gray-300
-               p-2 rounded-full shadow-lg hidden z-20">
-        →
-    </button>
-
-</div>
-
-@endif
+        @endif
 
     </div>
 
@@ -324,41 +334,57 @@
 @section('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    const wrapper = document.getElementById("cat-wrapper");
-    const content = document.getElementById("cat-content");
-
+    const track = document.getElementById("carousel-track");
     const leftBtn = document.getElementById("cat-left");
     const rightBtn = document.getElementById("cat-right");
 
-    let offset = 0; // posisi geser
+    if (!track) return;
+
+    let currentIndex = 0;
+    // Mengambil total halaman dari variabel PHP
+    const totalSlides = {{ isset($chunks) ? $chunks->count() : 0 }};
 
     function updateButtons() {
-        const maxScroll = content.scrollWidth - wrapper.clientWidth;
+        // Atur Panah Kiri
+        if (currentIndex === 0) {
+            leftBtn.classList.add("invisible");
+        } else {
+            leftBtn.classList.remove("invisible");
+        }
 
-        leftBtn.classList.toggle("hidden", offset <= 0);
-        rightBtn.classList.toggle("hidden", offset >= maxScroll);
+        // Atur Panah Kanan
+        if (currentIndex >= totalSlides - 1 || totalSlides === 0) {
+            rightBtn.classList.add("invisible");
+        } else {
+            rightBtn.classList.remove("invisible");
+        }
     }
 
-    function moveRight() {
-        const maxScroll = content.scrollWidth - wrapper.clientWidth;
-        offset = Math.min(offset + 200, maxScroll);
-        content.style.transform = `translateX(-${offset}px)`;
-        updateButtons();
+    // Fungsi klik Panah Kanan (Pindah Halaman)
+    if (rightBtn) {
+        rightBtn.addEventListener("click", () => {
+            if (currentIndex < totalSlides - 1) {
+                currentIndex++;
+                track.style.transform = `translateX(-${currentIndex * 100}%)`;
+                updateButtons();
+            }
+        });
     }
 
-    function moveLeft() {
-        offset = Math.max(offset - 200, 0);
-        content.style.transform = `translateX(-${offset}px)`;
-        updateButtons();
+    // Fungsi klik Panah Kiri (Kembali Halaman)
+    if (leftBtn) {
+        leftBtn.addEventListener("click", () => {
+            if (currentIndex > 0) {
+                currentIndex--;
+                track.style.transform = `translateX(-${currentIndex * 100}%)`;
+                updateButtons();
+            }
+        });
     }
-
-    rightBtn.addEventListener("click", moveRight);
-    leftBtn.addEventListener("click", moveLeft);
 
     updateButtons();
 });
 </script>
-
 
 <script>
 window.addEventListener('load', function() {
