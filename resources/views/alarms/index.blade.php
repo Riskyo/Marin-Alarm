@@ -3,11 +3,6 @@
 @section('content')
 <div class="relative min-h-screen bg-white text-gray-900">
 
-    {{-- 🔵 Gambar background --}}
-    <img src="{{ asset('images/senyuminajah.jpg') }}"
-         alt="Background"
-         class="absolute bottom-0 left-0 w-32 opacity-10 pointer-events-none select-none hidden sm:block">
-
     {{-- ========================================================= --}}
     {{-- 🟢 TAMPILAN AWAL (BELUM ADA PENCARIAN) --}}
     {{-- ========================================================= --}}
