@@ -7,7 +7,7 @@
 
         {{-- ================= TITLE ================= --}}
         <div id="pdf-title-wrapper" class="w-fit mx-auto">
-            <h1 class="text-4xl font-bold mb-8 text-center">List PDF</h1>
+            <h1 class="text-4xl font-bold mb-8 text-center">Wiring Diagram</h1>
         </div>
 
         {{-- ================= FILTER + UPLOAD ================= --}}
