@@ -6,8 +6,7 @@
     {{-- ========================================================= --}}
     {{-- 🟢 TAMPILAN AWAL (BELUM ADA PENCARIAN) --}}
     {{-- ========================================================= --}}
-    @if(empty($search) && empty(request('machine_type_id')))
-    <div class="flex flex-col items-center justify-start min-h-screen px-4 pt-20">
+    @if(!request()->has('search') && !request()->has('machine_type_id') && !request()->has('page'))    <div class="flex flex-col items-center justify-start min-h-screen px-4 pt-20">
     @if(session('success'))
     <div class="pt-6 bg-green-100 border border-green-300 text-green-800 rounded mb-4 shadow text-center animate-fade">
         {{ session('success') }}
@@ -185,16 +184,17 @@
 
         {{-- ==================== TABEL ==================== --}}
         <div class="overflow-x-auto">
-            <table class="min-w-full border">
+        <table class="min-w-full border">
                 <thead class="bg-gray-100">
                     <tr>
                         <th class="p-2 border text-center w-12">Code Alarm</th>
-                        <th class="p-2 border text-center w-20">Machine</th> {{-- ⭐ BARU --}}
+                        <th class="p-2 border text-center w-20">Machine</th>
                         <th class="p-2 border">Description</th>
                         <th class="p-2 border text-center">Step</th>
                         <th class="p-2 border">Action</th>
                         <th class="p-2 border">Sensor</th>
                         <th class="p-2 border">Komponen</th>
+                        <th class="p-2 border">PLC IO</th> {{-- ⭐ KOLOM BARU --}}
                         @can('isAdmin')<th class="p-2 border text-center">Aksi</th>@endcan
                     </tr>
                 </thead>
@@ -215,10 +215,10 @@
                     {{-- Jika tidak ada action --}}
                     <tr>
                         <td class="p-2 border text-center">{{ $alarm->code_alarm }}</td>
-                        <td class="p-2 border text-center">{{ $alarm->machineType?->name ?? '-' }}</td> {{-- ⭐ Baru --}}
+                        <td class="p-2 border text-center">{{ $alarm->machineType?->name ?? '-' }}</td>
                         <td class="p-2 border">{{ $alarm->description }}</td>
                         <td class="p-2 border text-center">{{ $alarm->step }}</td>
-                        <td class="p-2 border text-gray-400" colspan="4">Belum ada action</td>
+                        <td class="p-2 border text-gray-400" colspan="5">Belum ada action</td> {{-- ⭐ Colspan diubah dari 4 jadi 5 --}}
                     @can('isAdmin')
                         <td class="p-2 border text-center">
                             <a href="{{ route('alarms.edit', ['alarm' => $alarm->id, 'search' => request('search'), 'machine_type' => request('machine_type')]) }}"
@@ -247,7 +247,7 @@
                                             {{ $alarm->code_alarm }}
                                         </td>
 
-                                        {{-- ⭐ Machine Type --}}
+                                        {{-- Machine Type --}}
                                         <td class="p-2 border text-center" rowspan="{{ $rowspan }}">
                                             {{ $alarm->machineType?->name ?? '-' }}
                                         </td>
@@ -275,11 +275,24 @@
                                         {{ $action->sensors[$sIndex]->sensor_name ?? '-' }}
                                     </td>
 
+                                    {{-- Kolom Gambar Komponen --}}
                                     <td class="p-2 border text-center">
                                         @if(isset($action->sensors[$sIndex]) && $action->sensors[$sIndex]->komponen)
                                             <a href="{{ asset('storage/'.$action->sensors[$sIndex]->komponen) }}" target="_blank">
                                                 <img src="{{ asset('storage/'.$action->sensors[$sIndex]->komponen) }}"
-                                                     class="h-16 w-16 object-cover border rounded mx-auto">
+                                                     class="h-16 w-16 object-cover border rounded mx-auto hover:opacity-80 transition">
+                                            </a>
+                                        @else
+                                            -
+                                        @endif
+                                    </td>
+
+                                    {{-- ⭐ Kolom Gambar PLC IO (BARU) --}}
+                                    <td class="p-2 border text-center">
+                                        @if(isset($action->sensors[$sIndex]) && $action->sensors[$sIndex]->plc_io)
+                                            <a href="{{ asset('storage/'.$action->sensors[$sIndex]->plc_io) }}" target="_blank">
+                                                <img src="{{ asset('storage/'.$action->sensors[$sIndex]->plc_io) }}"
+                                                     class="h-16 w-16 object-cover border rounded mx-auto hover:opacity-80 transition">
                                             </a>
                                         @else
                                             -
@@ -307,7 +320,7 @@
 
                 @empty
                     <tr>
-                        <td class="p-3 border text-center" colspan="9">
+                        <td class="p-3 border text-center" colspan="10"> {{-- ⭐ Colspan diubah dari 9 jadi 10 --}}
                             Tidak ada data untuk pencarian "<b>{{ $search }}</b>".
                         </td>
                     </tr>
@@ -318,7 +331,7 @@
         </div>
 
         <div class="mt-4">
-            {{ $alarms->appends(['search' => request('search'), 'machine_type' => request('machine_type')])->links() }}
+            {{ $alarms->links() }}
         </div>
     </div>
     @endif
