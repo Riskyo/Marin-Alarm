@@ -13,14 +13,12 @@
         <div>
             <label class="font-medium">Machine Type</label>
             <select name="machine_type_id" class="border px-3 py-2 rounded w-full">
-
                 @foreach($machineTypes as $type)
                     <option value="{{ $type->id }}"
                         {{ $pdf->machine_type_id == $type->id ? 'selected' : '' }}>
                         {{ $type->name }}
                     </option>
                 @endforeach
-
             </select>
         </div>
 
@@ -30,6 +28,13 @@
                    value="{{ $pdf->title }}">
         </div>
 
+        <div>
+            <label class="font-medium">Tipe PDF</label>
+            <select name="type" class="border px-3 py-2 rounded w-full" required>
+                <option value="biasa" {{ $pdf->type == 'biasa' ? 'selected' : '' }}>PDF Biasa</option>
+                <option value="wiring" {{ $pdf->type == 'wiring' ? 'selected' : '' }}>PDF Wiring</option>
+            </select>
+        </div>
         <div>
             <label class="font-medium">File PDF Baru (optional)</label>
             <input type="file" name="file" accept="application/pdf"

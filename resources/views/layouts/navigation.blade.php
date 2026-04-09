@@ -12,7 +12,6 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
 
-            <!-- 🔵 Logo + Title -->
             <div class="flex items-center">
                 
                 <a href="{{ route('alarms.index') }}"
@@ -23,13 +22,16 @@
                     MARIN ALARMS
                 </a>
 
-                <!-- 🟢 Desktop Navigation -->
                 <div class="hidden sm:flex sm:space-x-8 sm:ms-10">
 
-                    <!-- ⬅️ List PDF sekarang di depan -->
-                    <a href="{{ route('pdf.index') }}"
+                    <a href="{{ route('pdf.index', ['type' => 'wiring']) }}"
                         class="text-gray-700 hover:text-blue-600 font-medium text-sm transition">
                         Wiring Diagram
+                    </a>
+
+                    <a href="{{ route('pdf.index', ['type' => 'biasa']) }}"
+                        class="text-gray-700 hover:text-blue-600 font-medium text-sm transition">
+                        List PDF
                     </a>
 
                     @can('isAdmin')
@@ -39,7 +41,6 @@
                         </a>
                     @endcan
 
-                    <!-- ⬅️ Show Tutorial hanya tampil jika bukan create/edit -->
                     @unless($hideTutorial)
                         <button onclick="startTutorial()"
                             class="text-gray-700 hover:text-blue-600 font-medium text-sm transition">
@@ -50,7 +51,6 @@
                 </div>
             </div>
 
-            <!-- 🟠 Desktop User Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6 relative">
 
                 @can('isAdmin')
@@ -82,7 +82,6 @@
                 </div>
             </div>
 
-            <!-- 🟡 Mobile Hamburger -->
             <div class="flex items-center sm:hidden">
                 <button id="hamburger-btn"
                     class="p-2 rounded-md text-gray-600 hover:bg-gray-100">
@@ -99,13 +98,16 @@
         </div>
     </div>
 
-    <!-- 🔻 Mobile Menu -->
     <div id="mobile-menu" class="hidden sm:hidden bg-white border-t border-gray-200">
 
         <div class="pt-2 pb-3">
 
-            <!-- List PDF dulu -->
-            <a href="{{ route('pdf.index') }}"
+            <a href="{{ route('pdf.index', ['type' => 'wiring']) }}"
+                class="block px-4 py-2 text-gray-700 font-medium text-sm hover:text-blue-600">
+                Wiring Diagram
+            </a>
+
+            <a href="{{ route('pdf.index', ['type' => 'biasa']) }}"
                 class="block px-4 py-2 text-gray-700 font-medium text-sm hover:text-blue-600">
                 List PDF
             </a>
@@ -117,10 +119,9 @@
                 </a>
             @endcan
 
-            <!-- Show Tutorial kecuali create/edit -->
             @unless($hideTutorial)
                 <button onclick="startTutorial()"
-                    class="block px-4 py-2 text-gray-700 font-medium text-sm hover:text-blue-600">
+                    class="block px-4 py-2 text-gray-700 font-medium text-sm hover:text-blue-600 w-full text-left">
                     {{ __('Show Tutorial') }}
                 </button>
             @endunless
@@ -148,7 +149,6 @@
     </div>
 </nav>
 
-<!-- ⚙️ JS Toggle Menu -->
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 

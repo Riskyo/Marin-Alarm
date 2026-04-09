@@ -19,22 +19,26 @@ class PdfController extends Controller
     public function index(Request $request)
     {
         $machine_type_id = $request->machine_type_id;
-        $search = $request->search; // 👈 Tangkap input pencarian
+        $search = $request->search; 
+        $type = $request->type; 
 
         $pdfs = Pdf::with('machineType')
             ->when($machine_type_id, fn($q) =>
                 $q->where('machine_type_id', $machine_type_id)
             )
             ->when($search, fn($q) => 
-                $q->where('title', 'like', "%{$search}%") // 👈 Filter berdasarkan judul
+                $q->where('title', 'like', "%{$search}%")
+            )
+            ->when($type, fn($q) => 
+                $q->where('type', $type) 
             )
             ->orderBy('created_at', 'DESC')
             ->paginate(10)
-            ->withQueryString(); // withQueryString memastikan search & filter tidak hilang saat pindah page pagination
+            ->withQueryString(); 
 
         $machineTypes = MachineType::all();
 
-        return view('pdf.index', compact('pdfs', 'machine_type_id', 'machineTypes', 'search'));
+        return view('pdf.index', compact('pdfs', 'machine_type_id', 'machineTypes', 'search', 'type'));
     }
 
     // =======================
@@ -55,6 +59,7 @@ class PdfController extends Controller
             'machine_type_id' => 'required|exists:machine_types,id',
             'title' => 'required|string|unique:pdfs,title',
             'file' => 'required|mimes:pdf|max:20480',
+            'type' => 'required|in:biasa,wiring', 
         ]);
 
         $machine = MachineType::find($request->machine_type_id)->name;
@@ -70,6 +75,7 @@ class PdfController extends Controller
             'machine_type_id' => $request->machine_type_id,
             'title'           => $request->title,
             'filename'        => $path,
+            'type'            => $request->type, 
         ]);
 
         return redirect()->route('pdf.index');
@@ -93,6 +99,7 @@ class PdfController extends Controller
             'machine_type_id' => 'required|exists:machine_types,id',
             'title' => 'required|string|unique:pdfs,title,' . $pdf->id,
             'file'  => 'nullable|mimes:pdf|max:20480',
+            'type' => 'required|in:biasa,wiring', 
         ]);
 
         $machine = MachineType::find($request->machine_type_id)->name;
@@ -101,9 +108,9 @@ class PdfController extends Controller
         $data = [
             'machine_type_id' => $request->machine_type_id,
             'title'           => $request->title,
+            'type'            => $request->type, 
         ];
 
-        // Jika upload PDF baru
         if ($request->hasFile('file')) {
             Storage::disk('public')->delete($pdf->filename);
 

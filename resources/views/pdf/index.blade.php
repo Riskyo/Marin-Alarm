@@ -7,21 +7,26 @@
 
         {{-- ================= TITLE ================= --}}
         <div id="pdf-title-wrapper" class="w-fit mx-auto">
-            <h1 class="text-4xl font-bold mb-8 text-center">List PDF</h1>
+            <h1 class="text-4xl font-bold mb-8 text-center">Wiring & PDF</h1>
         </div>
 
         {{-- ================= FILTER + UPLOAD ================= --}}
         <form method="GET"
-              class="flex flex-col sm:flex-row sm:items-center sm:justify-center gap-3 w-full max-w-4xl mx-auto mb-6">
+              class="flex flex-col xl:flex-row xl:items-center justify-center gap-3 w-full mb-6 flex-wrap">
             
-            {{-- 🔍 KOTAK PENCARIAN (Baru ditambahkan) --}}
             <input type="text" name="search" value="{{ request('search') }}"
                    placeholder="Cari judul PDF..."
-                   class="border rounded-full shadow px-4 py-3 bg-white text-lg w-full sm:w-auto focus:outline-none focus:ring-2 focus:ring-blue-500">
+                   class="border rounded-full shadow px-4 py-2.5 bg-white text-base w-full xl:w-64 focus:outline-none focus:ring-2 focus:ring-blue-500">
 
-            {{-- DROPDOWN MESIN --}}
+            <select name="type"
+                class="border rounded-full shadow px-4 py-2.5 pr-10 bg-white text-base w-full xl:w-48 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
+                <option value="">Semua Tipe</option>
+                <option value="biasa" {{ request('type') == 'biasa' ? 'selected' : '' }}>PDF Biasa</option>
+                <option value="wiring" {{ request('type') == 'wiring' ? 'selected' : '' }}>PDF Wiring</option>
+            </select>
+
             <select name="machine_type_id"
-                class="border rounded-full shadow px-4 py-3 bg-white text-lg pr-10 w-full sm:w-auto focus:outline-none focus:ring-2 focus:ring-blue-500">
+                class="border rounded-full shadow px-4 py-2.5 pr-10 bg-white text-base w-full xl:w-48 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
                 <option value="">All Machine</option>
                 @foreach($machineTypes as $type)
                     <option value="{{ $type->id }}"
@@ -31,14 +36,13 @@
                 @endforeach
             </select>
 
-            {{-- TOMBOL FILTER / CARI --}}
-            <button class="bg-blue-600 text-white px-6 py-3 rounded-full hover:bg-blue-700 transition shadow w-full sm:w-auto">
+            <button class="bg-blue-600 text-white px-6 py-2.5 rounded-full hover:bg-blue-700 transition shadow w-full xl:w-auto whitespace-nowrap cursor-pointer">
                 Cari & Filter
             </button>
 
             @can('isAdmin')
             <a href="{{ route('pdf.create') }}"
-                class="bg-green-600 text-white px-6 py-3 rounded-full hover:bg-green-700 transition shadow w-full sm:w-auto text-center">
+                class="bg-green-600 text-white px-6 py-2.5 rounded-full hover:bg-green-700 transition shadow w-full xl:w-auto whitespace-nowrap text-center cursor-pointer">
                 Upload PDF
             </a>
             @endcan
@@ -57,6 +61,7 @@
                     <tr>
                         <th class="p-2 border text-center w-28">Machine</th>
                         <th class="p-2 border text-center">Title</th>
+                        <th class="p-2 border text-center w-28">Tipe</th> {{-- Tambahan Header Tipe --}}
                         <th class="p-2 border text-center w-28">Preview</th>
                         @can('isAdmin')
                         <th class="p-2 border text-center w-32">Aksi</th>
@@ -76,6 +81,11 @@
                         {{-- Title --}}
                         <td class="p-2 border">
                             {{ $pdf->title }}
+                        </td>
+
+                        {{-- Tipe --}}
+                        <td class="p-2 border capitalize">
+                            {{ $pdf->type }}
                         </td>
 
                         {{-- Preview --}}
@@ -114,7 +124,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="4" class="p-3 border text-center">
+                        <td colspan="5" class="p-3 border text-center">
                             Belum ada file PDF.
                         </td>
                     </tr>
@@ -141,7 +151,7 @@ window.addEventListener('load', function() {
         return;
     }
 
-    const TOUR_KEY = 'pdf_index_tour_v1'; // versi tutorial PDF
+    const TOUR_KEY = 'pdf_index_tour_v2'; // versi tutorial diupdate
 
     window.pdfTour = new Shepherd.Tour({
         defaultStepOptions: {
@@ -163,12 +173,12 @@ window.addEventListener('load', function() {
     // 🔹 STEP 1 — Judul Halaman
     addStepIf('#pdf-title-wrapper', {
         title: 'List PDF 📄',
-        text: 'Di halaman ini kamu bisa melihat daftar file PDF berdasarkan jenis mesin.',
+        text: 'Di halaman ini kamu bisa melihat daftar file PDF.',
         attachTo: { on: 'bottom' },
         buttons: [{ text: 'Lanjut', action: window.pdfTour.next }]
     });
 
-    // 🔹 STEP 1.5 — Kotak Pencarian (Search)
+    // 🔹 STEP 2 — Kotak Pencarian (Search)
     addStepIf('input[name="search"]', {
         title: 'Cari PDF 🔍',
         text: 'Ketikkan nama atau judul PDF di sini untuk mencari file dengan cepat.',
@@ -176,23 +186,31 @@ window.addEventListener('load', function() {
         buttons: [{ text: 'Lanjut', action: window.pdfTour.next }]
     });
 
-    // 🔹 STEP 2 — Dropdown Machine Type
+    // 🔹 STEP 3 — Dropdown Tipe PDF
+    addStepIf('select[name="type"]', {
+        title: 'Filter Tipe PDF 📂',
+        text: 'Pilih apakah ingin melihat semua file, PDF biasa, atau khusus PDF Wiring.',
+        attachTo: { on: 'bottom' },
+        buttons: [{ text: 'Lanjut', action: window.pdfTour.next }]
+    });
+
+    // 🔹 STEP 4 — Dropdown Machine Type
     addStepIf('select[name=machine_type_id]', {
         title: 'Filter Mesin 🏭',
-        text: 'Gunakan dropdown ini untuk memfilter PDF berdasarkan mesin Bulkglass atau Depalletiser.',
+        text: 'Gunakan dropdown ini untuk memfilter PDF berdasarkan mesin.',
         attachTo: { on: 'bottom' },
         buttons: [{ text: 'Lanjut', action: window.pdfTour.next }]
     });
 
-    // 🔹 STEP 3 — Tombol Filter
+    // 🔹 STEP 5 — Tombol Filter
     addStepIf('button.bg-blue-600', {
         title: 'Terapkan Filter 🔎',
-        text: 'Klik tombol ini untuk menampilkan PDF sesuai jenis mesin yang dipilih.',
+        text: 'Klik tombol ini untuk menerapkan pencarian dan filter.',
         attachTo: { on: 'bottom' },
         buttons: [{ text: 'Lanjut', action: window.pdfTour.next }]
     });
 
-    // 🔹 STEP 4 — Tombol Upload PDF (Admin Only)
+    // 🔹 STEP 6 — Tombol Upload PDF (Admin Only)
     @can('isAdmin')
     addStepIf('a.bg-green-600', {
         title: 'Upload PDF Baru ➕',
@@ -202,10 +220,10 @@ window.addEventListener('load', function() {
     });
     @endcan
 
-    // 🔹 STEP 5 — Tabel PDF
+    // 🔹 STEP 7 — Tabel PDF
     addStepIf('table', {
         title: 'Tabel Daftar PDF 📑',
-        text: 'Semua PDF yang telah di-upload akan ditampilkan di tabel ini.',
+        text: 'Semua PDF yang sesuai filter akan ditampilkan di tabel ini.',
         attachTo: { on: 'top' },
         buttons: [{ text: 'Selesai', action: window.pdfTour.complete }]
     });
@@ -225,4 +243,3 @@ function startTutorial() {
 }
 </script>
 @endsection
-

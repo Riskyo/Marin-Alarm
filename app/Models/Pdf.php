@@ -10,6 +10,7 @@ class Pdf extends Model
         'machine_type_id',
         'title',
         'filename',
+        'type',
     ];
 
     public function machineType()
