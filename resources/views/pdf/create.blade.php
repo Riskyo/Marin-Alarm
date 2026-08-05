@@ -13,6 +13,7 @@
         <div>
             <label class="font-medium">Machine Type</label>
             <select name="machine_type_id" class="border px-3 py-2 rounded w-full" required>
+                <option value="" disabled selected>-- Pilih Machine Type --</option>
                 @foreach($machineTypes as $type)
                     <option value="{{ $type->id }}">
                         {{ $type->name }}
