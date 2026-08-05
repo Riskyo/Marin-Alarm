@@ -20,8 +20,8 @@
 
             <select name="type"
                 class="border rounded-full shadow px-4 py-2.5 pr-10 bg-white text-base w-full xl:w-48 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
-                <option value="" selected>Semua Tipe</option>
-                <option value="biasa" {{ request('type') == 'PRA' ? 'selected' : '' }}>PDF PRA</option>
+                <option value="">Semua Tipe</option>
+                <option value="biasa" {{ request('type') == 'biasa' ? 'selected' : '' }}>PDF PRA</option>
                 <option value="wiring" {{ request('type') == 'wiring' ? 'selected' : '' }}>PDF Wiring</option>
             </select>
 
@@ -85,7 +85,7 @@
 
                         {{-- Tipe --}}
                         <td class="p-2 border capitalize">
-                            {{ $pdf->type }}
+                            {{ $pdf->type == 'biasa' ? 'PRA' : $pdf->type }}
                         </td>
 
                         {{-- Preview --}}
