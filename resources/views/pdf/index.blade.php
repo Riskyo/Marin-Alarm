@@ -20,7 +20,7 @@
 
             <select name="type"
                 class="border rounded-full shadow px-4 py-2.5 pr-10 bg-white text-base w-full xl:w-48 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
-                <option value="">Semua Tipe</option>
+                <option value="" selected>Semua Tipe</option>
                 <option value="biasa" {{ request('type') == 'PRA' ? 'selected' : '' }}>PDF PRA</option>
                 <option value="wiring" {{ request('type') == 'wiring' ? 'selected' : '' }}>PDF Wiring</option>
             </select>
