@@ -30,7 +30,8 @@
         <div>
             <label class="font-medium">Tipe PDF</label>
             <select name="type" class="border px-3 py-2 rounded w-full" required>
-                <option value="PRA">PDF PRA</option>
+                <option value="" disabled selected>-- Pilih Tipe PDF --</option>
+                <option value="biasa">PDF PRA</option>
                 <option value="wiring">PDF Wiring</option>
             </select>
         </div>
