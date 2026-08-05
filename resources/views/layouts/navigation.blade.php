@@ -25,12 +25,7 @@
 
                     <a href="{{ route('pdf.index', ['type' => 'wiring']) }}"
                         class="text-gray-700 hover:text-blue-600 font-medium text-sm transition">
-                        Wiring Diagram
-                    </a>
-
-                    <a href="{{ route('pdf.index', ['type' => 'biasa']) }}"
-                        class="text-gray-700 hover:text-blue-600 font-medium text-sm transition">
-                        List PDF
+                        Wiring Diagram & PRA
                     </a>
 
                     @can('isAdmin')
@@ -104,11 +99,6 @@
             <a href="{{ route('pdf.index', ['type' => 'wiring']) }}"
                 class="block px-4 py-2 text-gray-700 font-medium text-sm hover:text-blue-600">
                 Wiring Diagram
-            </a>
-
-            <a href="{{ route('pdf.index', ['type' => 'biasa']) }}"
-                class="block px-4 py-2 text-gray-700 font-medium text-sm hover:text-blue-600">
-                List PDF
             </a>
 
             @can('isAdmin')

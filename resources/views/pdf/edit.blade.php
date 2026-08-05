@@ -31,7 +31,7 @@
         <div>
             <label class="font-medium">Tipe PDF</label>
             <select name="type" class="border px-3 py-2 rounded w-full" required>
-                <option value="biasa" {{ $pdf->type == 'biasa' ? 'selected' : '' }}>PDF Biasa</option>
+                <option value="PRA" {{ $pdf->type == 'PRA' ? 'selected' : '' }}>PDF PRA</option>
                 <option value="wiring" {{ $pdf->type == 'wiring' ? 'selected' : '' }}>PDF Wiring</option>
             </select>
         </div>

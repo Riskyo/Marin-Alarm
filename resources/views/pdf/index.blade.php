@@ -7,7 +7,7 @@
 
         {{-- ================= TITLE ================= --}}
         <div id="pdf-title-wrapper" class="w-fit mx-auto">
-            <h1 class="text-4xl font-bold mb-8 text-center">Wiring & PDF</h1>
+            <h1 class="text-4xl font-bold mb-8 text-center">Wiring Diagram  & Problem Resolution Assistant (PRA)</h1>
         </div>
 
         {{-- ================= FILTER + UPLOAD ================= --}}
@@ -21,7 +21,7 @@
             <select name="type"
                 class="border rounded-full shadow px-4 py-2.5 pr-10 bg-white text-base w-full xl:w-48 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
                 <option value="">Semua Tipe</option>
-                <option value="biasa" {{ request('type') == 'biasa' ? 'selected' : '' }}>PDF Biasa</option>
+                <option value="PRA" {{ request('type') == 'PRA' ? 'selected' : '' }}>PDF PRA</option>
                 <option value="wiring" {{ request('type') == 'wiring' ? 'selected' : '' }}>PDF Wiring</option>
             </select>
 
@@ -189,7 +189,7 @@ window.addEventListener('load', function() {
     // 🔹 STEP 3 — Dropdown Tipe PDF
     addStepIf('select[name="type"]', {
         title: 'Filter Tipe PDF 📂',
-        text: 'Pilih apakah ingin melihat semua file, PDF biasa, atau khusus PDF Wiring.',
+        text: 'Pilih apakah ingin melihat semua file, PDF PRA, atau khusus PDF Wiring.',
         attachTo: { on: 'bottom' },
         buttons: [{ text: 'Lanjut', action: window.pdfTour.next }]
     });
